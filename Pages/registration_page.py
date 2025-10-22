@@ -1,6 +1,7 @@
-from selene import browser
-from selene import be, have, command
+from selene import browser, be, have, command
 from pathlib import Path
+from Data.user import User
+
 
 class RegistrationPage:
     def __init__(self):
@@ -14,7 +15,7 @@ class RegistrationPage:
 
     @property
     def should_registered_user_with(self):
-        return browser.element('.table').all('td').even
+        return browser.all('.table td').even
 
     def get_modal_popup(self):
         return browser.element('.modal-title')
@@ -80,3 +81,33 @@ class RegistrationPage:
     def click_submit_button(self):
         browser.element('#submit').perform(command.js.click)
         return self
+
+    def reg_user_form(self, user: User):
+        self.fill_firstname(user.first_name)
+        self.fill_lastname(user.last_name)
+        self.fill_useremail(user.email)
+        self.select_gender(user.gender)
+        self.fill_user_phone_number(user.phone)
+        self.fill_date_of_birth(*user.birthdate)
+        self.select_subject(user.subject)
+        for hobby in user.hobby:
+            self.select_hobby(hobby)
+        self.upload_file(user.file)
+        self.fill_current_address(user.address)
+        self.select_state(user.state)
+        self.select_city(user.city)
+        return self
+
+    def assert_info_user(self, user: User):
+        self.should_registered_user_with.should(have.exact_texts(
+            f'{user.first_name} {user.last_name}',
+            user.email,
+            user.gender,
+            user.phone,
+            f'{user.birthdate[2]} {user.birthdate[1]},{user.birthdate[0]}',
+            user.subject,
+            ', '.join(user.hobby),
+            user.file,
+            user.address,
+            f'{user.state} {user.city}'
+        ))
