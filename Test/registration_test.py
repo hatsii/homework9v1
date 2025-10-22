@@ -2,7 +2,7 @@ import os
 import sys
 
 from Pages.registration_page import RegistrationPage
-from Data.users import test_user
+from Data.user import test_user
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
